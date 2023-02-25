@@ -27,9 +27,13 @@ import PropTypes from "prop-types";
 import React from "react";
 import { NavLink } from "react-router-dom";
 import routes from "routes.js";
+import { getAuth } from "firebase/auth";
 
 export default function HeaderLinks(props) {
   const { variant, children, fixed, secondary, onOpen, ...rest } = props;
+
+  const auth = getAuth();
+  const user = auth.currentUser;  
 
   // Chakra Color Mode
   let inputBg = "#0F1535";
@@ -48,48 +52,11 @@ export default function HeaderLinks(props) {
       w={{ sm: "100%", md: "auto" }}
       alignItems='center'
       flexDirection='row'>
-      {/* <InputGroup
-        cursor='pointer'
-        bg={inputBg}
-        borderRadius='15px'
-        borderColor='rgba(226, 232, 240, 0.3)'
-        w={{
-          sm: "128px",
-          md: "200px",
-        }}
-        me={{ sm: "auto", md: "20px" }}>
-        <InputLeftElement
-          children={
-            <IconButton
-              bg='inherit'
-              borderRadius='inherit'
-              _hover='none'
-              _active={{
-                bg: "inherit",
-                transform: "none",
-                borderColor: "transparent",
-              }}
-              _focus={{
-                boxShadow: "none",
-              }}
-              icon={
-                <SearchIcon color={searchIcon} w='15px' h='15px' />
-              }></IconButton>
-          }
-        />
-        <Input
-          fontSize='xs'
-          py='11px'
-          color={mainText}
-          placeholder='Type here...'
-          borderRadius='inherit'
-        />
-      </InputGroup> */}
       <SidebarResponsive
         iconColor='gray.500'
         logoText={props.logoText}
         secondary={props.secondary}
-        routes={routes}
+        routes={user? routes : [routes[4]]}
         // logo={logo}
         {...rest}
       />
@@ -100,6 +67,7 @@ export default function HeaderLinks(props) {
           me={{ sm: "2px", md: "16px" }}
           color={navbarIcon}
           variant='transparent-with-icon'
+          disabled={user}
           rightIcon={
             document.documentElement.dir ? (
               ""
@@ -114,7 +82,7 @@ export default function HeaderLinks(props) {
               ""
             )
           }>
-          <Text display={{ sm: "none", md: "flex" }}>Sign In</Text>
+          <Text display={{ sm: "none", md: "flex" }}>{user? user.displayName : "Sign In"}</Text>
         </Button>
       </NavLink>
       
