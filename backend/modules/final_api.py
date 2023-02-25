@@ -6,9 +6,12 @@ import cv2
 import os
 import subprocess
 import moviepy.editor as mp
+from moviepy.editor import VideoFileClip, concatenate_videoclips
+from moviepy.editor import *
+
 
 def extract_audio(input_video):
-  audio_file = "audio.mp3"
+  audio_file = "/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/audio.wav"
   subprocess.call(['ffmpeg', '-i', input_video, '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', '-ac', '2', audio_file])
   return audio_file
 
@@ -18,35 +21,21 @@ def add_audio_to_video(input_video, input_audio, output_video):
     subprocess.run(command)
     return output_video
 
-def combine_videos(video_filenames, output_file):
-  # Get properties of input video 
-  cap = cv2.VideoCapture(video_filenames[0])
-  frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-  frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-  fps = int(cap.get(cv2.CAP_PROP_FPS))
+def combine_videos(input_path1, input_path2):
+    clip1 = VideoFileClip(input_path1)
+    clip2 = VideoFileClip(input_path2)
 
-  # Define the output video filename and codec
-  output_filename = output_file
-  fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+     # Add a small buffer time to the end of the first clip
+    clip1 = clip1.set_end(clip1.duration + 0.1)
 
-  # Create the output video writer
-  output_video = cv2.VideoWriter(output_filename, fourcc, fps, (frame_width, frame_height), True)
+    # Concatenate the clips and preserve audio
+    final_clip = concatenate_videoclips([clip1.set_audio(clip1.audio.set_duration(clip1.duration+clip2.duration)), clip2.set_audio(clip2.audio.set_start(clip1.duration))])
 
-  # Loop through each input video file and write each frame to the output video
-  for video_filename in video_filenames:
-      cap = cv2.VideoCapture(video_filename)
-      while True:
-          ret, frame = cap.read()
-          if not ret:
-            break
-          # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
-          output_video.write(frame)
-      cap.release()
-      
-  # Release the output video writer
-  output_video.release()
-  print(f'Output video saved to {output_filename}')
-  return output_filename
+    # Write the output file
+    output_path = 'output.mp4'
+    final_clip.write_videofile(output_path, fps=clip1.fps, codec='libx264', audio_codec='aac', temp_audiofile='temp-audio.m4a', remove_temp=True)
+
+    return output_path
 
 def split_video(input_video_path, timestamp1, timestamp2):
     # Create output file names
@@ -159,36 +148,33 @@ def compress_video_ffmpeg(input_file, output_file, bitrate='1000k'):
     return output_file
 
 
-# def upscale_video_with_audio(input_path, output_path, scale=2, interpolation=cv2.INTER_CUBIC):
-#     # Upscale video
-#     cap = cv2.VideoCapture(input_path)
+def slowed_down(input_path, output_path, scale=2, interpolation=cv2.INTER_CUBIC):
+    # Upscale video
+    cap = cv2.VideoCapture(input_path)
 
-#     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-#     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-#     out = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'mp4v'), 30, (width*scale, height*scale))
+    out = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'mp4v'), 30, (width*scale, height*scale))
 
-#     while(cap.isOpened()):
-#         ret, frame = cap.read()
-#         if ret == True:
-#             frame = cv2.resize(frame, (width*scale, height*scale), interpolation=interpolation)
-#             out.write(frame)
-#         else:
-#             break
+    while(cap.isOpened()):
+        ret, frame = cap.read()
+        if ret == True:
+            frame = cv2.resize(frame, (width*scale, height*scale), interpolation=interpolation)
+            out.write(frame)
+        else:
+            break
 
-#     cap.release()
-#     out.release()
+    cap.release()
+    out.release()
 
-input_path = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG.MOV'
-input_path_aud = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/custom_audio.mp3'
+input_path = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_upscaled.mp4'
+input_path_aud = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/audio.wav'
+output_vid = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_transition.mp4'
 
 # # Extract audio from mp4 file
 # audio_file = extract_audio(input_path)
 # print(audio_file)
-
-# # Add audio to video file
-# added_audio = add_audio_to_video(input_path, input_path_aud)
-# print(added_audio)
 
 # # Snip a section out of the video
 # output_video_paths = split_video(input_path, 10, 20)
@@ -204,6 +190,12 @@ input_path_aud = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests
 # Video Compression
 # compress_video_ffmpeg(input_path, '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_compressed.mp4', '500k')
 
-# Video Upscale
-upscale_video_with_audio(input_path, '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_upscaled.mp4', scale=2, interpolation=cv2.INTER_LINEAR)
+# Video Slowdown
+# slowed_down(input_path, '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_upscaled.mp4', scale=2, interpolation=cv2.INTER_LINEAR)
 
+# # Add audio to video file
+# added_audio = add_audio_to_video(input_path, input_path_aud, output_vid)
+# print(added_audio)
+
+# Combine
+# combine_videos('/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_part1.mp4', '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_part2.mp4')
