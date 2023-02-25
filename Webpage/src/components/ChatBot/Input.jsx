@@ -104,9 +104,10 @@ export default function Input({ onSend }) {
           <svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
+            width="25"
+            height="25"
             viewBox="0 0 500 500"
+            fill="white"
           >
             <g>
               <g>
@@ -117,8 +118,8 @@ export default function Input({ onSend }) {
         </button>
       </form>
       <div>
-        <button class = "testButton" onClick={handleEnableSpeechClick}>Start Listening</button>
-        <button class = "testButton" onClick={handleDisableSpeechClick}>Stop Listening</button>
+        <button className = "testButton" onClick={handleEnableSpeechClick}>Start Listening</button>
+        <button className = "testButton" onClick={handleDisableSpeechClick}>Stop Listening</button>
         </div>
     </div>
   );
