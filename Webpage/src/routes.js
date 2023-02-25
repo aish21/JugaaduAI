@@ -20,7 +20,7 @@
 import Dashboard from "views/Dashboard/Dashboard.js";
 import Tables from "views/Dashboard/Tables.js";
 import Billing from "views/Dashboard/Billing.js";
-import RTLPage from "views/RTL/RTLPage.js";
+import Chatbot from "views/ChatBot/ChatBot";
 import Profile from "views/Dashboard/Profile.js";
 import SignIn from "views/Pages/SignIn.js";
 import SignUp from "views/Pages/SignUp.js";
@@ -55,6 +55,13 @@ var dashRoutes = [
     name: "Billing",
     icon: <CreditIcon color='inherit' />,
     component: Billing,
+    layout: "/admin",
+  },
+  {
+    path: "/chatbot", // Future extension for billing
+    name: "Chatbot",
+    icon: <CreditIcon color='inherit' />,
+    component: Chatbot,
     layout: "/admin",
   },
   {
