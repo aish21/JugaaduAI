@@ -57,7 +57,7 @@ export default function Input({ onSend }) {
           value={text}
           placeholder="Enter your message here"
         />
-        <input type="file" onChange={handleFileChange}/>
+        <input type="file" onChange={handleFileChange} className="fileChosen"/>
         <button>
           <svg
             version="1.1"
