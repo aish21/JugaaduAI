@@ -60,7 +60,7 @@ export function SidebarHelp(props) {
             transform: "none",
             borderColor: "transparent",
           }}
-          _active='none'
+          
           _focus={{
             boxShadow: "none",
           }}

@@ -2,7 +2,7 @@
   font-family: monospace;
   border-radius: 10px;
   box-shadow: 0 12px 24px 0 rgba(0, 0, 0, 0.15);
-  background: #f5f8fb;
+  background: #1d214f;
   text-align: center;
   display: flex;
   flex-flow: column;
@@ -15,9 +15,10 @@
   text-align: center;
   color: rgb(255, 255, 255);
   max-height: 58px;
-  font-size: 16px;
+  font-size: 26px;
   font-weight: bold;
-  background-color: #150050;
+  font-family: 'Trebuchet MS';
+  background-color: #2c1864;
 }
 
 .messages {
@@ -38,8 +39,9 @@
   padding: 15px 20px;
   margin: 5px;
   border-radius: 20px 20px 20px 1px;
-  background: #00aaa5;
+  background: #a081de;
   color: white;
+  font-family:'Trebuchet MS';
   min-width: 40px;
 }
 
@@ -48,8 +50,9 @@
   padding: 15px 10px;
   margin: 10px;
   border-radius: 20px 20px 1px 20px;
-  background: #cccccc;
-  color: black;
+  background: #8140d1;
+  font-family:'Trebuchet MS';
+  color: white;
 }
 
 .input {

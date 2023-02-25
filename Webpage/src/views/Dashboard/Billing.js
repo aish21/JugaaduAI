@@ -80,7 +80,7 @@ function Billing() {
                   w='100%'>
                   <Flex justify='space-between' align='center'>
                     <Text fontSize='md' fontWeight='bold'>
-                      Vision UI
+                      Big Bank
                     </Text>
                     <Icon
                       as={RiMastercardFill}
@@ -131,7 +131,7 @@ function Billing() {
                       Credit Balance
                     </Text>
                     <Text color='#fff' fontWeight='bold' fontSize='34px'>
-                      $25,215
+                      $1,000,000
                     </Text>
                   </Flex>
                   <Flex direction='column'>
@@ -272,7 +272,7 @@ function Billing() {
             <Flex
               justify='space-between'
               align='center'
-              mb='1rem'
+              //mb='1rem'
               w='100%'
               mb='28px'>
               <Text fontSize='lg' color='#fff' fontWeight='bold'>
@@ -304,95 +304,7 @@ function Billing() {
           </CardBody>
         </Card>
       </Grid>
-      <Grid templateColumns={{ sm: "1fr", lg: "60% 38%" }}>
-        {/* Billing Information */}
-        <Card my={{ lg: "24px" }} me={{ lg: "24px" }}>
-          <Flex direction='column'>
-            <CardHeader py='12px'>
-              <Text color='#fff' fontSize='lg' fontWeight='bold'>
-                Billing Information
-              </Text>
-            </CardHeader>
-            <CardBody>
-              <Flex direction='column' w='100%'>
-                {billingData.map((row) => {
-                  return (
-                    <BillingRow
-                      name={row.name}
-                      company={row.company}
-                      email={row.email}
-                      number={row.number}
-                    />
-                  );
-                })}
-              </Flex>
-            </CardBody>
-          </Flex>
-        </Card>
-        {/* Transactions List */}
-        <Card my='24px' ms={{ lg: "24px" }}>
-          <CardHeader mb='12px'>
-            <Flex direction='column' w='100%'>
-              <Flex
-                direction={{ sm: "column", lg: "row" }}
-                justify={{ sm: "center", lg: "space-between" }}
-                align={{ sm: "center" }}
-                w='100%'
-                my={{ md: "12px" }}>
-                <Text
-                  color='#fff'
-                  fontSize={{ sm: "lg", md: "xl", lg: "lg" }}
-                  fontWeight='bold'>
-                  Your Transactions
-                </Text>
-                <Flex align='center'>
-                  <Icon
-                    as={FaRegCalendarAlt}
-                    color='gray.400'
-                    w='15px'
-                    h='15px'
-                    color='#fff'
-                    me='6px'
-                  />
-                  <Text color='gray.400' fontSize='sm'>
-                    23 - 30 March 2021
-                  </Text>
-                </Flex>
-              </Flex>
-            </Flex>
-          </CardHeader>
-          <CardBody>
-            <Flex direction='column' w='100%'>
-              <Text color='gray.400' fontSize='xs' mb='18px'>
-                NEWEST
-              </Text>
-              {newestTransactions.map((row) => {
-                return (
-                  <TransactionRow
-                    name={row.name}
-                    logo={row.logo}
-                    date={row.date}
-                    price={row.price}
-                  />
-                );
-              })}
-              <Text color='gray.400' fontSize='xs' my='18px'>
-                OLDER
-              </Text>
-              {olderTransactions.map((row) => {
-                return (
-                  <TransactionRow
-                    name={row.name}
-                    logo={row.logo}
-                    date={row.date}
-                    price={row.price}
-                  />
-                );
-              })}
-            </Flex>
-          </CardBody>
-        </Card>
-      </Grid>
+      
     </Flex>
   );
 }
