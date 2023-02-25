@@ -1,8 +1,8 @@
 {
-  "name": "vision-dashboard-chakra",
+  "name": "Jugaadus",
   "version": "1.0.1",
   "private": true,
-  "homepage": "https://demos.creative-tim.com/vision-ui-dashboard-chakra/#/",
+  "homepage": "https://localhost:3000/#/",
   "dependencies": {
     "@chakra-ui/icons": "^1.1.5",
     "@chakra-ui/react": "1.8.8",
