@@ -86,14 +86,5 @@ var routes = [
     ],
   },
 ];
-// var dashRoute = [
-//   {
-//     path: "/chatbot", // Future extension for billing
-//     name: "Chatbot",
-//     icon: <CreditIcon color='inherit' />,
-//     component: Chatbot,
-//     layout: "/admin",
-//   },
-// ];
 export default routes;
 
