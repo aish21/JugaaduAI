@@ -38,7 +38,7 @@ import signInImage from "assets/img/signInImage.png";
 
 // Custom Components
 import GradientBorder from "components/GradientBorder/GradientBorder";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { setPersistence, signInWithEmailAndPassword, browserSessionPersistence } from "firebase/auth";
 import { auth } from "../../firebase/initFirebase";
 
 function SignIn() {
@@ -50,7 +50,9 @@ function SignIn() {
   const [password, setPassword] = useState("");
 
   function handleSignIn() {
-    signInWithEmailAndPassword(auth, email, password)
+    setPersistence(auth, browserSessionPersistence)
+  .then(() => {
+    return signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
         const user = userCredential.user;
         console.log(user);
@@ -61,6 +63,12 @@ function SignIn() {
         console.log(errorCode);
         alert("Incorrect User Details. Please try again");
     });
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    console.log(errorCode);
+  });
+    
   }
 
   return (
