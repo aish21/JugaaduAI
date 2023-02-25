@@ -44,7 +44,7 @@ export function SidebarHelp(props) {
         Need help?
       </Text>
       <Text fontSize='xs' color='white' mb='10px'>
-        Please check our docs
+        Email us at-
       </Text>
       <Link
         w='100%'
@@ -65,7 +65,7 @@ export function SidebarHelp(props) {
             boxShadow: "none",
           }}
           color='white'>
-          DOCUMENTATION
+          jugaadu@jugaadu.com
         </Button>
       </Link>
     </Flex>

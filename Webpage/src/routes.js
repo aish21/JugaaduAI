@@ -21,7 +21,6 @@ import Dashboard from "views/Dashboard/Dashboard.js";
 import Tables from "views/Dashboard/Tables.js";
 import Billing from "views/Dashboard/Billing.js";
 import Chatbot from "views/ChatBot/ChatBot";
-import Profile from "views/Dashboard/Profile.js";
 import SignIn from "views/Pages/SignIn.js";
 import SignUp from "views/Pages/SignUp.js";
 
@@ -35,7 +34,7 @@ import {
   SupportIcon,
 } from "components/Icons/Icons";
 
-var dashRoutes = [
+var routes = [
   {
     path: "/dashboard",
     name: "Dashboard",
@@ -44,9 +43,9 @@ var dashRoutes = [
     layout: "/admin",
   },
   {
-    path: "/tables",
-    name: "Tables",
-    icon: <StatsIcon color='inherit' />,
+    path: "/creators",
+    name: "Creators",
+    icon: <PersonIcon color='inherit' />,
     component: Tables,
     layout: "/admin",
   },
@@ -60,7 +59,7 @@ var dashRoutes = [
   {
     path: "/chatbot", // Future extension for billing
     name: "Chatbot",
-    icon: <CreditIcon color='inherit' />,
+    icon: <SupportIcon color='inherit' />,
     component: Chatbot,
     layout: "/admin",
   },
@@ -69,14 +68,6 @@ var dashRoutes = [
     category: "account",
     state: "pageCollapse",
     views: [
-      {
-        path: "/profile",
-        name: "Profile",
-        icon: <PersonIcon color='inherit' />,
-        secondaryNavbar: true,
-        component: Profile,
-        layout: "/admin",
-      },
       {
         path: "/signin",
         name: "Sign In",
@@ -95,4 +86,14 @@ var dashRoutes = [
     ],
   },
 ];
-export default dashRoutes;
+// var dashRoute = [
+//   {
+//     path: "/chatbot", // Future extension for billing
+//     name: "Chatbot",
+//     icon: <CreditIcon color='inherit' />,
+//     component: Chatbot,
+//     layout: "/admin",
+//   },
+// ];
+export default routes;
+
