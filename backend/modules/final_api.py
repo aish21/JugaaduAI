@@ -6,9 +6,16 @@ import cv2
 import os
 import subprocess
 import moviepy.editor as mp
+from moviepy.editor import VideoFileClip, concatenate_videoclips
+from moviepy.editor import *
+import numpy as np
+from multiprocessing import Pool
+import speech_recognition as sr
+import pysrt
+
 
 def extract_audio(input_video):
-  audio_file = "audio.mp3"
+  audio_file = input_video
   subprocess.call(['ffmpeg', '-i', input_video, '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', '-ac', '2', audio_file])
   return audio_file
 
@@ -18,35 +25,21 @@ def add_audio_to_video(input_video, input_audio, output_video):
     subprocess.run(command)
     return output_video
 
-def combine_videos(video_filenames, output_file):
-  # Get properties of input video 
-  cap = cv2.VideoCapture(video_filenames[0])
-  frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-  frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-  fps = int(cap.get(cv2.CAP_PROP_FPS))
+def combine_videos(input_path1, input_path2):
+    clip1 = VideoFileClip(input_path1)
+    clip2 = VideoFileClip(input_path2)
 
-  # Define the output video filename and codec
-  output_filename = output_file
-  fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+     # Add a small buffer time to the end of the first clip
+    clip1 = clip1.set_end(clip1.duration + 0.1)
 
-  # Create the output video writer
-  output_video = cv2.VideoWriter(output_filename, fourcc, fps, (frame_width, frame_height), True)
+    # Concatenate the clips and preserve audio
+    final_clip = concatenate_videoclips([clip1.set_audio(clip1.audio.set_duration(clip1.duration+clip2.duration)), clip2.set_audio(clip2.audio.set_start(clip1.duration))])
 
-  # Loop through each input video file and write each frame to the output video
-  for video_filename in video_filenames:
-      cap = cv2.VideoCapture(video_filename)
-      while True:
-          ret, frame = cap.read()
-          if not ret:
-            break
-          # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
-          output_video.write(frame)
-      cap.release()
-      
-  # Release the output video writer
-  output_video.release()
-  print(f'Output video saved to {output_filename}')
-  return output_filename
+    # Write the output file
+    output_path = 'output.mp4'
+    final_clip.write_videofile(output_path, fps=clip1.fps, codec='libx264', audio_codec='aac', temp_audiofile='temp-audio.m4a', remove_temp=True)
+
+    return output_path
 
 def split_video(input_video_path, timestamp1, timestamp2):
     # Create output file names
@@ -159,36 +152,165 @@ def compress_video_ffmpeg(input_file, output_file, bitrate='1000k'):
     return output_file
 
 
-# def upscale_video_with_audio(input_path, output_path, scale=2, interpolation=cv2.INTER_CUBIC):
-#     # Upscale video
-#     cap = cv2.VideoCapture(input_path)
+def slowed_down(input_path, output_path, scale=2, interpolation=cv2.INTER_CUBIC):
+    # Upscale video
+    cap = cv2.VideoCapture(input_path)
 
-#     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-#     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-#     out = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'mp4v'), 30, (width*scale, height*scale))
+    out = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'mp4v'), 30, (width*scale, height*scale))
 
-#     while(cap.isOpened()):
-#         ret, frame = cap.read()
-#         if ret == True:
-#             frame = cv2.resize(frame, (width*scale, height*scale), interpolation=interpolation)
-#             out.write(frame)
-#         else:
-#             break
+    while(cap.isOpened()):
+        ret, frame = cap.read()
+        if ret == True:
+            frame = cv2.resize(frame, (width*scale, height*scale), interpolation=interpolation)
+            out.write(frame)
+        else:
+            break
 
-#     cap.release()
-#     out.release()
+    cap.release()
+    out.release()
 
-input_path = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG.MOV'
-input_path_aud = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/custom_audio.mp3'
+def process_frame(frame):
+    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    
+    brightness_factor = target_brightness / hsv_frame[:, :, 2].mean()
+    saturation_factor = target_saturation / hsv_frame[:, :, 1].mean()
+    
+    hsv_frame[:, :, 1] = np.clip(hsv_frame[:, :, 1] * saturation_factor, 0, 255)
+    hsv_frame[:, :, 2] = np.clip(hsv_frame[:, :, 2] * brightness_factor, 0, 255)
+    
+    modified_frame = cv2.cvtColor(hsv_frame, cv2.COLOR_HSV2BGR)
+    # rotated_frame = cv2.rotate(modified_frame, cv2.ROTATE_180)
+    return modified_frame
+
+def saturation_brightness(video):
+    # Calculate the average brightness and saturation of the video
+    avg_saturation = 0
+    avg_brightness = 0
+    frame_count = 0
+
+    while True:
+        ret, frame = video.read()
+        if not ret:
+            break
+        
+        # Convert the frame to the HSV color space
+        hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
+        # Compute the average brightness and saturation values of the frame
+        avg_saturation += hsv_frame[:, :, 1].mean()
+        avg_brightness += hsv_frame[:, :, 2].mean()
+        frame_count += 1
+
+    avg_saturation /= frame_count
+    avg_brightness /= frame_count
+
+    # Define the target brightness and saturation values
+    target_saturation = 1.2 * avg_saturation
+    target_brightness = 32 + avg_brightness
+
+    # Set up the output video codec and format
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    fps = int(video.get(cv2.CAP_PROP_FPS))
+    frame_size = (int(video.get(cv2.CAP_PROP_FRAME_WIDTH)), int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+
+    # Set up the output video file
+    output_file = cv2.VideoWriter("output.mp4", fourcc, fps, frame_size)
+    output_file.set(cv2.VIDEOWRITER_PROP_NSTRIPES, -1)
+
+    # Loop through the frames of the input video and adjust the brightness and saturation
+    video.set(cv2.CAP_PROP_POS_FRAMES, 0) # reset the frame counter
+    while True:
+        ret, frame = video.read()
+        if not ret:
+            break
+        
+        # Convert the frame to the HSV color space
+        hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
+        # Calculate the brightness and saturation scaling factors based on the deviation from the target values
+        brightness_factor = target_brightness / hsv_frame[:, :, 2].mean()
+        saturation_factor = target_saturation / hsv_frame[:, :, 1].mean()
+        
+        # Scale the brightness and saturation of the frame
+        hsv_frame[:, :, 1] = np.clip(hsv_frame[:, :, 1] * saturation_factor, 0, 255)
+        hsv_frame[:, :, 2] = np.clip(hsv_frame[:, :, 2] * brightness_factor, 0, 255)
+        
+        # Convert the frame back to the BGR color space
+        modified_frame = cv2.cvtColor(hsv_frame, cv2.COLOR_HSV2BGR)
+        #rotated_frame = cv2.rotate(modified_frame, cv2.ROTATE_180)
+        # Write the modified frame to the output video file
+        output_file.write(frame)
+
+    # Release the input and output video files and close all windows
+    video.release()
+    output_file.release()
+    cv2.destroyAllWindows()
+
+def extract_audio(video_file):
+    audio_file = "audio_new.wav"
+    subprocess.call(['ffmpeg', '-i', video_file, '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', '-ac', '2', audio_file])
+    return audio_file
+    
+def generate_subtitles(video_path):
+  # Initialize the speech recognition engine
+  r = sr.Recognizer()
+
+  with sr.AudioFile(extract_audio(video_path)) as source:
+      # Extract the audio from e video file
+      audio = r.record(source)
+  # Recognize the speech in the audio file
+      speech_text = r.recognize_google(audio)
+
+  # Split the speech text into chunks of 10 seconds
+  speech_chunks = [speech_text[i:i+100] for i in range(0, len(speech_text), 100)]
+
+  # Initialize a SRT object to store the captions
+  captions = pysrt.SubRipFile()
+
+  # Initialize a counter for the caption IDs
+  caption_id = 1
+
+  # Loop through the speech chunks and generate captions
+  for speech_chunk in speech_chunks:
+      # Create a new caption object
+      caption = pysrt.SubRipItem()
+      # Set the caption ID and start/end times
+      caption.index = caption_id
+      caption.start.seconds = (caption_id - 1) * 10
+      caption.end.seconds = caption_id * 10
+      # Set the caption text
+      caption.text = speech_chunk
+      # Add the caption to the SRT object
+      captions.append(caption)
+      # Increment the caption ID counter
+      caption_id += 1
+
+  # Save the captions as an SRT file
+  srt_output = 'subtitles.srt'
+  captions.save(srt_output)
+  add_subtitles(video_path, srt_output)
+
+def add_subtitles(input_video, captions):
+    # Create output file name
+    output_file = 'video_with_subtitles_added.mp4'
+
+    # Run FFmpeg to add subtitles to video
+    cmd = f'ffmpeg -i "{input_video}" -vf subtitles="{captions}" "{output_file}"'
+    subprocess.call(cmd, shell=True)
+
+    # Return output file path
+    return output_file
+
+input_path = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG.mp4'
+input_path_aud = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/audio.wav'
+output_vid = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_transition.mp4'
 
 # # Extract audio from mp4 file
 # audio_file = extract_audio(input_path)
 # print(audio_file)
-
-# # Add audio to video file
-# added_audio = add_audio_to_video(input_path, input_path_aud)
-# print(added_audio)
 
 # # Snip a section out of the video
 # output_video_paths = split_video(input_path, 10, 20)
@@ -204,6 +326,20 @@ input_path_aud = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests
 # Video Compression
 # compress_video_ffmpeg(input_path, '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_compressed.mp4', '500k')
 
-# Video Upscale
-upscale_video_with_audio(input_path, '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_upscaled.mp4', scale=2, interpolation=cv2.INTER_LINEAR)
+# Video Slowdown
+# slowed_down(input_path, '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_upscaled.mp4', scale=2, interpolation=cv2.INTER_LINEAR)
 
+# # Add audio to video file
+# added_audio = add_audio_to_video(input_path, input_path_aud, output_vid)
+# print(added_audio)
+
+# Combine
+# combine_videos('/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_part1.mp4', '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_part2.mp4')
+
+# # Saturation and Brightness
+# video = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_part1.mp4'
+# saturation_brightness(cv2.VideoCapture(video))
+
+# Caption Generation
+video_path = "/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/Shruthi.MOV"
+generate_subtitles(video_path)

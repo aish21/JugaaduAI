@@ -17,6 +17,7 @@
 */
 
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 // Chakra imports
 import {
   Box,
@@ -43,6 +44,7 @@ import { auth } from "../../firebase/initFirebase";
 function SignIn() {
   const titleColor = "white";
   const textColor = "gray.400";
+  const history = useHistory();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,7 +54,7 @@ function SignIn() {
     .then((userCredential) => {
         const user = userCredential.user;
         console.log(user);
-        // Reroute here
+        history.push('/');
     })
     .catch((error) => {
         const errorCode = error.code;

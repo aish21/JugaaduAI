@@ -100,7 +100,24 @@
   opacity: 1;
   outline: none;
   padding: 16px 52px 16px 10px;
-  width: 100%;
+  width: 220%;
+  -webkit-appearance: none;
+}
+
+.input > form > input[type="file"] {
+  font-family: monospace;
+  font-size: 16px;
+  border: 0;
+  border-radius: 0;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-top: 1px solid #eee;
+  box-shadow: none;
+  box-sizing: border-box;
+  opacity: 1;
+  outline: none;
+  padding: 16px 52px 16px 10px;
+  width: 70%;
   -webkit-appearance: none;
 }
 

@@ -40,6 +40,7 @@ import { FaGoogle } from "react-icons/fa";
 import GradientBorder from "components/GradientBorder/GradientBorder";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../../firebase/initFirebase";
+import { useHistory } from "react-router-dom";
 
 // Assets
 import signUpImage from "assets/img/signUpImage.png";
@@ -47,6 +48,7 @@ import signUpImage from "assets/img/signUpImage.png";
 function SignUp() {
   const titleColor = "white";
   const textColor = "gray.400";
+  const history = useHistory();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,7 +65,9 @@ function SignUp() {
     .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
-        updateProfile(user, {displayName : name})
+        updateProfile(user, {displayName : name});
+        history.push('/');
+
     })
     .catch((error) => {
         const errorCode = error.code;
