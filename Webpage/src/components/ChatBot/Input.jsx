@@ -5,7 +5,7 @@ import SpeechRecognition, {useSpeechRecognition} from "react-speech-recognition"
 
 export default function Input({ onSend }) {
   const [text, setText] = useState("");
-  const [file, setFile] = useState();
+  const [chosenFiles, setFile] = useState([]);
   const [percent, setPercent] = useState(0);
   const { transcript, resetTranscript } = useSpeechRecognition(); 
 
@@ -14,8 +14,10 @@ export default function Input({ onSend }) {
     setText(e.target.value);
   };
 
+  
   const handleFileChange = e => {
-    setFile(e.target.files[0]);
+    // const chosenFiles = Array.protoype.slice.call(e.target.files);
+    setFile(Array.prototype.slice.call(e.target.files));
     e.preventDefault();
   }
 
@@ -65,9 +67,10 @@ export default function Input({ onSend }) {
   };
 
   function handleUpload() {
-    if (!file) {
+    if (!chosenFiles) {
       alert("Please choose a file first!");
     }
+    chosenFiles.some((file) => {
     const storageRef = sRef(firebasestorage, '/input/' + file.name);
     const uploadTask = uploadBytesResumable(storageRef, file);
     uploadTask.on(
@@ -86,7 +89,7 @@ export default function Input({ onSend }) {
       console.log(url);
     });
   }
-  ); 
+  ); })
   }
 
 
@@ -99,7 +102,9 @@ export default function Input({ onSend }) {
           value={transcript? transcript:text}
           placeholder="Enter your message here"
         />
-        <input type="file" onChange={handleFileChange} className="fileChosen"/>
+        
+        <input type="file" multiple onChange={handleFileChange} className="fileChosen"/>
+        
         <button>
           <svg
             version="1.1"
