@@ -21,6 +21,7 @@ import Dashboard from "views/Dashboard/Dashboard.js";
 import Tables from "views/Dashboard/Tables.js";
 import Billing from "views/Dashboard/Billing.js";
 import Chatbot from "views/ChatBot/ChatBot";
+
 import SignIn from "views/Pages/SignIn.js";
 import SignUp from "views/Pages/SignUp.js";
 
@@ -86,14 +87,6 @@ var routes = [
     ],
   },
 ];
-// var dashRoute = [
-//   {
-//     path: "/chatbot", // Future extension for billing
-//     name: "Chatbot",
-//     icon: <CreditIcon color='inherit' />,
-//     component: Chatbot,
-//     layout: "/admin",
-//   },
-// ];
+
 export default routes;
 

@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { firebasestorage } from "../../firebase/initFirebase";
 import { uploadBytesResumable, ref as sRef, getDownloadURL } from "firebase/storage";
+import SpeechRecognition, {useSpeechRecognition} from "react-speech-recognition";
 
 export default function Input({ onSend }) {
   const [text, setText] = useState("");
   const [file, setFile] = useState();
   const [percent, setPercent] = useState(0);
+  const { transcript, resetTranscript } = useSpeechRecognition(); 
 
-  const handleInputChange = e => {
+  const handleChange = (e) => {
+    e.preventDefault();
     setText(e.target.value);
   };
 
@@ -19,8 +22,46 @@ export default function Input({ onSend }) {
   const handleSend = e => {
     handleUpload();
     e.preventDefault();
-    onSend(text);
+    
+    onSend(transcript? transcript:text);
     setText("");
+    resetTranscript();
+  };
+
+  const handleEnableSpeechClick = () => {
+    const permission = navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: false
+    });
+    permission.then(() => {
+      SpeechRecognition.startListening({ continuous: true });
+      console.log("listening");
+      //setText(transcript);
+    });
+  };
+
+  const handleDisableSpeechClick = () => {
+    SpeechRecognition.stopListening().then(() => {
+      // const microphone = navigator.permissions.query({ name: "microphone" });
+      // navigator.permissions.revoke(microphone);
+      navigator.permissions.query({ name: 'microphone' })
+  .then(permissionStatus => {
+    if (permissionStatus.state === 'granted') {
+      permissionStatus.revoke()
+        .then(() => {
+          console.log('Microphone permissions revoked.');
+        })
+        .catch((err) => {
+          console.error('Failed to revoke microphone permissions:', err);
+        });
+    }
+  })
+  .catch((err) => {
+    console.error('Failed to query microphone permissions:', err);
+  });
+
+      //setText(transcript);
+    });
   };
 
   function handleUpload() {
@@ -48,16 +89,17 @@ export default function Input({ onSend }) {
   ); 
   }
 
+
   return (
     <div className="input">
       <form onSubmit={handleSend} className="side-by-side">
         <input
           type="text"
-          onChange={handleInputChange}
-          value={text}
+          onChange={handleChange}
+          value={transcript? transcript:text}
           placeholder="Enter your message here"
         />
-        <input type="file" onChange={handleFileChange}/>
+        <input type="file" onChange={handleFileChange} className="fileChosen"/>
         <button>
           <svg
             version="1.1"
@@ -74,6 +116,10 @@ export default function Input({ onSend }) {
           </svg>
         </button>
       </form>
+      <div>
+        <button class = "testButton" onClick={handleEnableSpeechClick}>Start Listening</button>
+        <button class = "testButton" onClick={handleDisableSpeechClick}>Stop Listening</button>
+        </div>
     </div>
   );
 }
