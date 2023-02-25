@@ -8,10 +8,14 @@ import subprocess
 import moviepy.editor as mp
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 from moviepy.editor import *
+import numpy as np
+from multiprocessing import Pool
+import speech_recognition as sr
+import pysrt
 
 
 def extract_audio(input_video):
-  audio_file = "/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/audio.wav"
+  audio_file = input_video
   subprocess.call(['ffmpeg', '-i', input_video, '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', '-ac', '2', audio_file])
   return audio_file
 
@@ -168,7 +172,139 @@ def slowed_down(input_path, output_path, scale=2, interpolation=cv2.INTER_CUBIC)
     cap.release()
     out.release()
 
-input_path = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_upscaled.mp4'
+def process_frame(frame):
+    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    
+    brightness_factor = target_brightness / hsv_frame[:, :, 2].mean()
+    saturation_factor = target_saturation / hsv_frame[:, :, 1].mean()
+    
+    hsv_frame[:, :, 1] = np.clip(hsv_frame[:, :, 1] * saturation_factor, 0, 255)
+    hsv_frame[:, :, 2] = np.clip(hsv_frame[:, :, 2] * brightness_factor, 0, 255)
+    
+    modified_frame = cv2.cvtColor(hsv_frame, cv2.COLOR_HSV2BGR)
+    # rotated_frame = cv2.rotate(modified_frame, cv2.ROTATE_180)
+    return modified_frame
+
+def saturation_brightness(video):
+    # Calculate the average brightness and saturation of the video
+    avg_saturation = 0
+    avg_brightness = 0
+    frame_count = 0
+
+    while True:
+        ret, frame = video.read()
+        if not ret:
+            break
+        
+        # Convert the frame to the HSV color space
+        hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
+        # Compute the average brightness and saturation values of the frame
+        avg_saturation += hsv_frame[:, :, 1].mean()
+        avg_brightness += hsv_frame[:, :, 2].mean()
+        frame_count += 1
+
+    avg_saturation /= frame_count
+    avg_brightness /= frame_count
+
+    # Define the target brightness and saturation values
+    target_saturation = 1.2 * avg_saturation
+    target_brightness = 32 + avg_brightness
+
+    # Set up the output video codec and format
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    fps = int(video.get(cv2.CAP_PROP_FPS))
+    frame_size = (int(video.get(cv2.CAP_PROP_FRAME_WIDTH)), int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+
+    # Set up the output video file
+    output_file = cv2.VideoWriter("output.mp4", fourcc, fps, frame_size)
+    output_file.set(cv2.VIDEOWRITER_PROP_NSTRIPES, -1)
+
+    # Loop through the frames of the input video and adjust the brightness and saturation
+    video.set(cv2.CAP_PROP_POS_FRAMES, 0) # reset the frame counter
+    while True:
+        ret, frame = video.read()
+        if not ret:
+            break
+        
+        # Convert the frame to the HSV color space
+        hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
+        # Calculate the brightness and saturation scaling factors based on the deviation from the target values
+        brightness_factor = target_brightness / hsv_frame[:, :, 2].mean()
+        saturation_factor = target_saturation / hsv_frame[:, :, 1].mean()
+        
+        # Scale the brightness and saturation of the frame
+        hsv_frame[:, :, 1] = np.clip(hsv_frame[:, :, 1] * saturation_factor, 0, 255)
+        hsv_frame[:, :, 2] = np.clip(hsv_frame[:, :, 2] * brightness_factor, 0, 255)
+        
+        # Convert the frame back to the BGR color space
+        modified_frame = cv2.cvtColor(hsv_frame, cv2.COLOR_HSV2BGR)
+        #rotated_frame = cv2.rotate(modified_frame, cv2.ROTATE_180)
+        # Write the modified frame to the output video file
+        output_file.write(frame)
+
+    # Release the input and output video files and close all windows
+    video.release()
+    output_file.release()
+    cv2.destroyAllWindows()
+
+def extract_audio(video_file):
+    audio_file = "audio_new.wav"
+    subprocess.call(['ffmpeg', '-i', video_file, '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', '-ac', '2', audio_file])
+    return audio_file
+    
+def generate_subtitles(video_path):
+  # Initialize the speech recognition engine
+  r = sr.Recognizer()
+
+  with sr.AudioFile(extract_audio(video_path)) as source:
+      # Extract the audio from e video file
+      audio = r.record(source)
+  # Recognize the speech in the audio file
+      speech_text = r.recognize_google(audio)
+
+  # Split the speech text into chunks of 10 seconds
+  speech_chunks = [speech_text[i:i+100] for i in range(0, len(speech_text), 100)]
+
+  # Initialize a SRT object to store the captions
+  captions = pysrt.SubRipFile()
+
+  # Initialize a counter for the caption IDs
+  caption_id = 1
+
+  # Loop through the speech chunks and generate captions
+  for speech_chunk in speech_chunks:
+      # Create a new caption object
+      caption = pysrt.SubRipItem()
+      # Set the caption ID and start/end times
+      caption.index = caption_id
+      caption.start.seconds = (caption_id - 1) * 10
+      caption.end.seconds = caption_id * 10
+      # Set the caption text
+      caption.text = speech_chunk
+      # Add the caption to the SRT object
+      captions.append(caption)
+      # Increment the caption ID counter
+      caption_id += 1
+
+  # Save the captions as an SRT file
+  srt_output = 'subtitles.srt'
+  captions.save(srt_output)
+  add_subtitles(video_path, srt_output)
+
+def add_subtitles(input_video, captions):
+    # Create output file name
+    output_file = 'video_with_subtitles_added.mp4'
+
+    # Run FFmpeg to add subtitles to video
+    cmd = f'ffmpeg -i "{input_video}" -vf subtitles="{captions}" "{output_file}"'
+    subprocess.call(cmd, shell=True)
+
+    # Return output file path
+    return output_file
+
+input_path = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG.mp4'
 input_path_aud = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/audio.wav'
 output_vid = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_transition.mp4'
 
@@ -199,3 +335,11 @@ output_vid = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_
 
 # Combine
 # combine_videos('/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_part1.mp4', '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_part2.mp4')
+
+# # Saturation and Brightness
+# video = '/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/OG_part1.mp4'
+# saturation_brightness(cv2.VideoCapture(video))
+
+# Caption Generation
+video_path = "/Users/aishwarya/Desktop/intuition-v9.0-Jugaadus/backend/tests/Shruthi.MOV"
+generate_subtitles(video_path)

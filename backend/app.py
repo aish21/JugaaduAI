@@ -23,7 +23,7 @@ def process1():
     inputText.append(raw_data)
     print(type(predText(inputText)))
     
-    return(predText(inputText[0])) 
+    return(predText(inputText)) 
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
