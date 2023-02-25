@@ -48,7 +48,7 @@ export default function HeaderLinks(props) {
       w={{ sm: "100%", md: "auto" }}
       alignItems='center'
       flexDirection='row'>
-      <InputGroup
+      {/* <InputGroup
         cursor='pointer'
         bg={inputBg}
         borderRadius='15px'
@@ -84,7 +84,7 @@ export default function HeaderLinks(props) {
           placeholder='Type here...'
           borderRadius='inherit'
         />
-      </InputGroup>
+      </InputGroup> */}
       <NavLink to='/auth/signin'>
         <Button
           ms='0px'
