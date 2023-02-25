@@ -42,7 +42,6 @@ import {
 // Styles for the circular progressbar
 import medusa from 'assets/img/WelcomeBack.jpg';
 import medusa1 from 'assets/img/EditBg.png';
-import medusa2 from 'assets/img/EditBg_2.png';
 import trim from 'assets/img/Trim.png';
 import combine from 'assets/img/Combine.png';
 import autocaptions from 'assets/img/Autocaptions.jpg';
@@ -58,6 +57,7 @@ import CardHeader from 'components/Card/CardHeader.js';
 import BarChart from 'components/Charts/BarChart';
 import LineChart from 'components/Charts/LineChart';
 import IconBox from 'components/Icons/IconBox';
+import BotHeader from "components/ChatBot/BotHeader";
 // Icons
 import { CartIcon, DocumentIcon, GlobeIcon, RocketIcon, StatsIcon, WalletIcon } from 'components/Icons/Icons.js';
 import DashboardTableRow from 'components/Tables/DashboardTableRow';
@@ -78,6 +78,7 @@ import { dashboardTableData, timelineData } from 'variables/general';
 
 export default function Dashboard() {
 	return (
+	
 		<Flex flexDirection='column' pt={{ base: '120px', md: '75px' }}>
 			
 			<Grid templateColumns={{ sm: '1fr', md: '1fr 1fr', '2xl': '2fr 1.2fr 1.5fr' }} my='26px' gap='18px'>
@@ -100,6 +101,10 @@ export default function Dashboard() {
 								</Text>
 								<Spacer />
 								<Flex align='center'>
+								{/* <Text> */}
+								{/* <Link
+									w = '100%'
+									href = 'http://localhost:3000/admin/chatbot/'> */}
 									<Button
 										p='0px'
 										variant='no-hover'
@@ -128,6 +133,8 @@ export default function Dashboard() {
 											_hover={{ transform: 'translateX(20%)' }}
 										/>
 									</Button>
+								{/* </Link>
+								</Text> */}
 								</Flex>
 							</Flex>
 						</Flex>
