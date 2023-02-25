@@ -95,7 +95,7 @@ export default function Dashboard() {
 								<Text fontSize='34px' color='#fff' fontWeight='bold' mb='18px'>
 									Welcome Back,
 								</Text>
-								<Text fontSize='md' color='#fff' fontWeight='normal' mb='auto'>
+								<Text fontSize='16px' color='#fff' fontWeight='normal' mb='auto'>
 									Glad to see you again! <br />
 									
 								</Text>
@@ -105,20 +105,21 @@ export default function Dashboard() {
 								{/* <Link
 									w = '100%'
 									href = 'http://localhost:3000/admin/chatbot/'> */}
+								{/* <NavLink to='/admin/chatbot'> */}
 									<Button
 										p='0px'
 										variant='no-hover'
 										bg='transparent'
 										my={{ sm: '1.5rem', lg: '0px' }}>
 										<Text
-											fontSize='sm'
+											fontSize='20px'
 											color='#fff'
 											fontWeight='bold'
 											cursor='pointer'
 											transition='all .3s ease'
 											my={{ sm: '1.5rem', lg: '0px' }}
 											_hover={{ me: '4px' }}>
-											Ask me anything
+											Ask me anything at Menu / ChatBot
 										</Text>
 										<Icon
 											as={BsArrowRight}
@@ -133,6 +134,7 @@ export default function Dashboard() {
 											_hover={{ transform: 'translateX(20%)' }}
 										/>
 									</Button>
+								{/* </NavLink>	 */}
 								{/* </Link>
 								</Text> */}
 								</Flex>
@@ -140,10 +142,12 @@ export default function Dashboard() {
 						</Flex>
 					</CardBody>
 				</Card>
+
+				
 			
 				{/* Satisfaction Rate */}
 				<Card gridArea={{ md: '2 / 1 / 3 / 2', '2xl': 'auto' }} bgImage={medusa1} bgPosition='50%'>
-					<CardHeader mb='24px'>
+					<CardBody mb='24px'>
 						<Flex direction='column'>
 							<Text color='#fff' fontSize='28px' fontWeight='bold' mb='4px'>
 								{"\n"}
@@ -151,7 +155,7 @@ export default function Dashboard() {
 							</Text>
 							
 						</Flex>
-					</CardHeader>
+					</CardBody>
 					
 				</Card>
 				{/* Referral Tracking */}

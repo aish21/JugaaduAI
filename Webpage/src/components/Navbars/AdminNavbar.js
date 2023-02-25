@@ -120,19 +120,35 @@ export default function AdminNavbar(props) {
           md: "row",
         }}
         alignItems={{ xl: "center" }}>
-        <Box mb={{ sm: "8px", md: "0px" }}>
+        <Box ms='auto' w={{ sm: "0px", md: "1000px" }}>
+          <AdminNavbarLinks
+            onOpen={props.onOpen}
+            logoText={props.logoText}
+            secondary={props.secondary}
+            fixed={props.fixed}
+            />
+        </Box>
+
+        <Box ms='auto' w={{ sm: "0px", md: "1000px" }}>
+        <Breadcrumb>
+            <BreadcrumbItem color='#A0AEC0'>
+              <BreadcrumbLink href='#' color='#A0AEC0'>
+                JUGAADU AI
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+        </Breadcrumb>
+        </Box>
+
+        <Box mb={{ sm: "0px", md: "0px" }}>
+        
           <Breadcrumb>
             <BreadcrumbItem color='#A0AEC0'>
               <BreadcrumbLink href='#' color='#A0AEC0'>
-                Pages
+                Home
               </BreadcrumbLink>
             </BreadcrumbItem>
 
-            <BreadcrumbItem color={mainText}>
-              <BreadcrumbLink href='#' color={mainText}>
-                {brandText}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
+            
           </Breadcrumb>
           {/* Here we create navbar brand, based on route name */}
           <Link
@@ -153,14 +169,7 @@ export default function AdminNavbar(props) {
             {brandText}
           </Link>
         </Box>
-        <Box ms='auto' w={{ sm: "100%", md: "unset" }}>
-          <AdminNavbarLinks
-            onOpen={props.onOpen}
-            logoText={props.logoText}
-            secondary={props.secondary}
-            fixed={props.fixed}
-          />
-        </Box>
+        
       </Flex>
     </Flex>
   );

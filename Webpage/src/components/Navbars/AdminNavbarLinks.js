@@ -85,9 +85,17 @@ export default function HeaderLinks(props) {
           borderRadius='inherit'
         />
       </InputGroup> */}
+      <SidebarResponsive
+        iconColor='gray.500'
+        logoText={props.logoText}
+        secondary={props.secondary}
+        routes={routes}
+        // logo={logo}
+        {...rest}
+      />
       <NavLink to='/auth/signin'>
         <Button
-          ms='0px'
+          ms='20px'
           px='0px'
           me={{ sm: "2px", md: "16px" }}
           color={navbarIcon}
@@ -109,23 +117,17 @@ export default function HeaderLinks(props) {
           <Text display={{ sm: "none", md: "flex" }}>Sign In</Text>
         </Button>
       </NavLink>
-      <SidebarResponsive
-        iconColor='gray.500'
-        logoText={props.logoText}
-        secondary={props.secondary}
-        routes={routes}
-        // logo={logo}
-        {...rest}
-      />
+      
+      {/* <Text>Menu</Text> */}
       <SettingsIcon
         cursor='pointer'
-        ms={{ base: "16px", xl: "0px" }}
-        me='16px'
+        ms={{ base: "20px", xl: "0px" }}
+        me='20px'
         ref={settingsRef}
         onClick={props.onOpen}
         color={navbarIcon}
-        w='18px'
-        h='18px'
+        w='24px'
+        h='24px'
       />
     </Flex>
   );

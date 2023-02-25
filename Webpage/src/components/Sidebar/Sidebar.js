@@ -443,12 +443,17 @@ export function SidebarResponsive(props) {
       alignItems='center'>
       <HamburgerIcon
         color={iconColor}
-        w='18px'
-        h='18px'
+        w='28px'
+        h='28px'
         ref={btnRef}
         colorScheme='teal'
         onClick={onOpen}
-      />
+      >
+      Menu
+      </HamburgerIcon>
+      {/* <Text>
+        
+      </Text> */}
       <Drawer
         isOpen={isOpen}
         onClose={onClose}
