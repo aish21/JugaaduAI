@@ -16,7 +16,7 @@
 
 */
 
-import React from "react";
+import React, { useState } from "react";
 
 // Chakra imports
 import {
@@ -35,10 +35,11 @@ import {
 } from "@chakra-ui/react";
 
 // Icons
-import { FaApple, FaFacebook, FaGoogle } from "react-icons/fa";
+import { FaGoogle } from "react-icons/fa";
 // Custom Components
-import AuthFooter from "components/Footer/AuthFooter";
 import GradientBorder from "components/GradientBorder/GradientBorder";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "../../firebase/initFirebase";
 
 // Assets
 import signUpImage from "assets/img/signUpImage.png";
@@ -46,6 +47,31 @@ import signUpImage from "assets/img/signUpImage.png";
 function SignUp() {
   const titleColor = "white";
   const textColor = "gray.400";
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+
+  function handleSubmit(event) {
+    event.preventDefault();
+  }
+
+  function handleSignUp() {
+    console.log(email);
+    console.log(password);
+    createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        updateProfile(user, {displayName : name})
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log('Error :' + errorMessage);
+        // ..
+    });
+  }
 
   return (
     <Flex position='relative' overflow={{ lg: "hidden" }}>
@@ -75,20 +101,12 @@ function SignUp() {
             mt={{ base: "60px", md: "140px", lg: "200px" }}
             mb='50px'>
             <Text
-              fontSize='4xl'
-              lineHeight='39px'
-              color='white'
-              fontWeight='bold'>
-              Welcome!
-            </Text>
-            <Text
               fontSize='md'
               color='white'
               fontWeight='normal'
               mt='10px'
               w={{ base: "100%", md: "90%", lg: "90%", xl: "80%" }}>
-              Use these awesome forms to login or create new account in your
-              project for free.
+              Register here to be a part of the Jugaadus Community!
             </Text>
           </Flex>
           <GradientBorder p='2px' me={{ base: "none", lg: "30px", xl: "none" }}>
@@ -111,51 +129,7 @@ function SignUp() {
                 mb='22px'>
                 Register With
               </Text>
-              <HStack spacing='15px' justify='center' mb='22px'>
-                <GradientBorder borderRadius='15px'>
-                  <Flex
-                    _hover={{ filter: "brightness(120%)" }}
-                    transition='all .25s ease'
-                    cursor='pointer'
-                    justify='center'
-                    align='center'
-                    bg='rgb(19,21,54)'
-                    w='71px'
-                    h='71px'
-                    borderRadius='15px'>
-                    <Link href='#'>
-                      <Icon
-                        color={titleColor}
-                        as={FaFacebook}
-                        w='30px'
-                        h='30px'
-                        _hover={{ filter: "brightness(120%)" }}
-                      />
-                    </Link>
-                  </Flex>
-                </GradientBorder>
-                <GradientBorder borderRadius='15px'>
-                  <Flex
-                    _hover={{ filter: "brightness(120%)" }}
-                    transition='all .25s ease'
-                    cursor='pointer'
-                    justify='center'
-                    align='center'
-                    bg='rgb(19,21,54)'
-                    w='71px'
-                    h='71px'
-                    borderRadius='15px'>
-                    <Link href='#'>
-                      <Icon
-                        color={titleColor}
-                        as={FaApple}
-                        w='30px'
-                        h='30px'
-                        _hover={{ filter: "brightness(120%)" }}
-                      />
-                    </Link>
-                  </Flex>
-                </GradientBorder>
+              <HStack spacing='15px' justify='center' mb='22px'>                
                 <GradientBorder borderRadius='15px'>
                   <Flex
                     _hover={{ filter: "brightness(120%)" }}
@@ -187,7 +161,7 @@ function SignUp() {
                 mb='22px'>
                 or
               </Text>
-              <FormControl>
+              <FormControl onSubmit={handleSubmit}>
                 <FormLabel
                   color={titleColor}
                   ms='4px'
@@ -215,6 +189,7 @@ function SignUp() {
                     h='46px'
                     type='text'
                     placeholder='Your name'
+                    onChange={(e) => setName(e.target.value)}
                   />
                 </GradientBorder>
                 <FormLabel
@@ -243,6 +218,7 @@ function SignUp() {
                     h='46px'
                     type='email'
                     placeholder='Your email address'
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </GradientBorder>
                 <FormLabel
@@ -271,6 +247,7 @@ function SignUp() {
                     h='46px'
                     type='password'
                     placeholder='Your password'
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </GradientBorder>
                 <FormControl display='flex' alignItems='center' mb='24px'>
@@ -294,28 +271,12 @@ function SignUp() {
                   maxW='350px'
                   h='45'
                   mb='20px'
-                  mt='20px'>
+                  mt='20px'
+                  onClick={handleSignUp}
+                >
                   SIGN UP
                 </Button>
               </FormControl>
-              <Flex
-                flexDirection='column'
-                justifyContent='center'
-                alignItems='center'
-                maxW='100%'
-                mt='0px'>
-                <Text color={textColor} fontWeight='medium'>
-                  Already have an account?
-                  <Link
-                    color={titleColor}
-                    as='span'
-                    ms='5px'
-                    href='#'
-                    fontWeight='bold'>
-                    Sign In
-                  </Link>
-                </Text>
-              </Flex>
             </Flex>
           </GradientBorder>
         </Flex>
@@ -324,7 +285,6 @@ function SignUp() {
           mx={{ base: "auto", lg: "unset" }}
           ms={{ base: "auto", lg: "auto" }}
           mb='90px'>
-          {/* <AuthFooter /> */}
         </Box>
         <Box
           display={{ base: "none", lg: "block" }}
@@ -345,14 +305,14 @@ function SignUp() {
             flexDirection='column'
             justifyContent='center'
             alignItems='center'
-            position='absolute'>
+            >
             <Text
               textAlign='center'
               color='white'
               letterSpacing='8px'
               fontSize='20px'
               fontWeight='500'>
-              INSPIRED BY THE FUTURE:
+              WELCOME
             </Text>
             <Text
               textAlign='center'
@@ -362,7 +322,7 @@ function SignUp() {
               fontWeight='bold'
               bgClip='text !important'
               bg='linear-gradient(94.56deg, #FFFFFF 79.99%, #21242F 102.65%)'>
-              THE VISION UI DASHBOARD
+              NICE TO SEE YOU!
             </Text>
           </Box>
         </Box>

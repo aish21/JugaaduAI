@@ -16,7 +16,7 @@
 
 */
 
-import React from "react";
+import React, { useState } from "react";
 // Chakra imports
 import {
   Box,
@@ -36,12 +36,29 @@ import {
 import signInImage from "assets/img/signInImage.png";
 
 // Custom Components
-import AuthFooter from "components/Footer/AuthFooter";
 import GradientBorder from "components/GradientBorder/GradientBorder";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase/initFirebase";
 
 function SignIn() {
   const titleColor = "white";
   const textColor = "gray.400";
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  function handleSignIn() {
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        console.log(errorCode);
+        alert("Incorrect User Details. Please try again");
+    });
+  }
 
   return (
     <Flex position='relative'>
@@ -91,6 +108,7 @@ function SignIn() {
                   maxW='100%'
                   h='46px'
                   placeholder='Your email adress'
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </GradientBorder>
             </FormControl>
@@ -117,6 +135,7 @@ function SignIn() {
                   maxW='100%'
                   type='password'
                   placeholder='Your password'
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </GradientBorder>
             </FormControl>
@@ -141,7 +160,9 @@ function SignIn() {
               maxW='350px'
               h='45'
               mb='20px'
-              mt='20px'>
+              mt='20px'
+              onClick={handleSignIn}
+            >
               SIGN IN
             </Button>
           </Flex>
@@ -171,8 +192,7 @@ function SignIn() {
             display='flex'
             flexDirection='column'
             justifyContent='center'
-            alignItems='center'
-            position='absolute'>
+            alignItems='center'>
             <Text
               textAlign='center'
               color='white'
