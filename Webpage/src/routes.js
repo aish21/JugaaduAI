@@ -44,7 +44,7 @@ var dashRoutes = [
     layout: "/admin",
   },
   {
-    path: "/tables", // Add our names here as authors
+    path: "/tables",
     name: "Tables",
     icon: <StatsIcon color='inherit' />,
     component: Tables,

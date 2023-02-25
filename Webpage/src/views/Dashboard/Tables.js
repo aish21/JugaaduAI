@@ -40,10 +40,7 @@ import TablesProjectRow from "components/Tables/TablesProjectRow";
 import TablesTableRow from "components/Tables/TablesTableRow";
 
 // Data
-import { tablesProjectData, tablesTableData } from "variables/general";
-
-// Icons
-import { AiFillCheckCircle } from "react-icons/ai";
+import {tablesTableData } from "variables/general";
 
 function Tables() {
   return (
@@ -84,7 +81,7 @@ function Tables() {
                     email={row.email}
                     subdomain={row.subdomain}
                     domain={row.domain}
-                    // lastItem={index === arr.length - 1 ? true : false}
+                    lastItem={index === arr.length - 1 ? true : false}
                   />
                 );
               })}

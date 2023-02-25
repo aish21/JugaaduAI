@@ -225,44 +225,6 @@ export const tablesTableData = [
   },
 ];
 
-export const tablesProjectData = [
-  {
-    logo: AdobexdLogo,
-    name: "Vision UI Version",
-    budget: "$14,000",
-    status: "Working",
-    progression: 60,
-  },
-  {
-    logo: AtlassianLogo,
-    name: "Add Progress Track",
-    budget: "$3,000",
-    status: "Canceled",
-    progression: 10,
-  },
-  {
-    logo: SlackLogo,
-    name: "Fix Platform Errors",
-    budget: "Not set",
-    status: "Done",
-    progression: 100,
-  },
-  {
-    logo: SpotifyLogo,
-    name: "Launch our Mobile App",
-    budget: "$32,000",
-    status: "Done",
-    progression: 100,
-  },
-  {
-    logo: JiraLogo,
-    name: "Add the New Pricing Page",
-    budget: "$400",
-    status: "Working",
-    progression: 25,
-  },
-];
-
 export const invoicesData = [
   {
     date: "March, 01, 2020",
