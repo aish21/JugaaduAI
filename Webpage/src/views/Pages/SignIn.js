@@ -68,17 +68,6 @@ function SignIn() {
             background='transparent'
             mt={{ base: "50px", md: "150px", lg: "160px", xl: "245px" }}
             mb={{ base: "60px", lg: "95px" }}>
-            <Heading color={titleColor} fontSize='32px' mb='10px'>
-              Nice to see you!
-            </Heading>
-            <Text
-              mb='36px'
-              ms='4px'
-              color={textColor}
-              fontWeight='bold'
-              fontSize='14px'>
-              Enter your email and password to sign in
-            </Text>
             <FormControl>
               <FormLabel
                 ms='4px'
@@ -155,20 +144,6 @@ function SignIn() {
               mt='20px'>
               SIGN IN
             </Button>
-
-            <Flex
-              flexDirection='column'
-              justifyContent='center'
-              alignItems='center'
-              maxW='100%'
-              mt='0px'>
-              <Text color={textColor} fontWeight='medium'>
-                Don't have an account?
-                <Link color={titleColor} as='span' ms='5px' fontWeight='bold'>
-                  Sign Up
-                </Link>
-              </Text>
-            </Flex>
           </Flex>
         </Flex>
         <Box
@@ -176,7 +151,6 @@ function SignIn() {
           mx={{ base: "auto", lg: "unset" }}
           ms={{ base: "auto", lg: "auto" }}
           mb='80px'>
-          <AuthFooter />
         </Box>
         <Box
           display={{ base: "none", lg: "block" }}
@@ -205,7 +179,7 @@ function SignIn() {
               letterSpacing='8px'
               fontSize='20px'
               fontWeight='500'>
-              INSPIRED BY THE FUTURE:
+              WELCOME
             </Text>
             <Text
               textAlign='center'
@@ -215,7 +189,7 @@ function SignIn() {
               fontWeight='bold'
               bgClip='text !important'
               bg='linear-gradient(94.56deg, #FFFFFF 79.99%, #21242F 102.65%)'>
-              THE VISION UI DASHBOARD
+              NICE TO SEE YOU!
             </Text>
           </Box>
         </Box>

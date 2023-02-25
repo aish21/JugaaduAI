@@ -107,9 +107,9 @@ export default function Pages(props) {
         <Portal containerRef={navRef}>
           <AuthNavbar
             secondary={getActiveNavbar(routes)}
-            logoText='VISION UI FREE'
+            logoText='Jugaadus'
           />
-        </Portal>
+        </Portal> 
         <Box w='100%'>
           <Box ref={wrapper} w='100%'>
             <Switch>
